@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LIFEXP // OS</title>
+    
+    <!-- PWA & Mobile Configuration -->
+    <meta name="theme-color" content="#090a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LIFEXP">
+    
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="fx-noise"></div>
+
+    <div class="hud-ambient" aria-hidden="true">
+        <div class="bg-tech-grid"></div>
+    </div>
+
+    <header class="sys-header">
+        <div class="sys-data">
+            <img src="assets/logo.svg" alt="LIFEXP Logo" class="header-mobile-logo">
+            <span class="tech-blink"></span>
+            <span class="eng-text text-accent" dir="ltr">PROD_v1</span>
+            <span class="separator">/</span>
+            <span class="eng-text text-muted" dir="ltr">UPLINK: SECURE</span>
+        </div>
+        <button class="sys-btn" id="sfx-toggle" onclick="toggleAudio()" aria-label="Toggle Sound">
+            <span class="eng-text" id="sfx-status" dir="ltr">SND: ON</span>
+        </button>
+    </header>
+
+    <nav class="mech-nav">
+        <div class="nav-branding desktop-only eng-text" dir="ltr">
+            <div class="barcode">||| |||| | |||</div>
+            <img src="assets/logo.svg" alt="LIFEXP Logo" class="site-logo">
+            <div class="sub-brand">PERSONAL_DB</div>
+        </div>
+
+        <div class="nav-cluster">
+            <button class="mech-nav-btn active" data-target="dashboard">
+                <span class="nav-idx eng-text">01</span>
+                <span class="nav-txt">الرئيسية</span>
+            </button>
+            <button class="mech-nav-btn" data-target="quests">
+                <span class="nav-idx eng-text">02</span>
+                <span class="nav-txt">العمليات</span>
+            </button>
+            <button class="mech-nav-btn" data-target="store">
+                <span class="nav-idx eng-text">03</span>
+                <span class="nav-txt">التسليح</span>
+            </button>
+            <button class="mech-nav-btn" data-target="profile">
+                <span class="nav-idx eng-text">04</span>
+                <span class="nav-txt">البيانات</span>
+                <span id="pending-badge" class="alert-dot hidden"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="sys-main">
+        <!-- Dashboard -->
+        <section id="dashboard" class="sys-view active">
+            <div class="tech-panel hero-id-card">
+                <div class="id-decor eng-text" dir="ltr">ID_CARD // AUTH_GRANTED</div>
+                <div class="id-content">
+                    <div class="avatar-rig">
+                        <img src="assets/avatar.jpg" alt="Avatar" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'><rect width=\'80\' height=\'80\' fill=\'%2311131a\'/></svg>'">
+                        <div class="avatar-overlay"></div>
+                        <svg class="target-bracket" viewBox="0 0 100 100">
+                            <path d="M0 20V0h20 M100 20V0H80 M0 80v20h20 M100 80v20H80" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+
+                    <div class="id-data">
+                        <div class="id-header">
+                            <h1 class="player-codename" id="player-name-display">اللاعب</h1>
+                            <span class="rank-box eng-text" dir="ltr">LVL <span id="dash-level">01</span></span>
+                        </div>
+
+                        <div class="tech-barcode eng-text" dir="ltr">||| | ||||| || ||| ||</div>
+
+                        <div class="xp-gauge">
+                            <div class="gauge-stats eng-text" dir="ltr">
+                                <span>EXP: <span id="dash-xp" class="text-white">0</span></span>
+                                <span class="text-muted">REQ: <span id="dash-next-xp">100</span></span>
+                            </div>
+                            <div class="gauge-track">
+                                <div id="dash-xp-fill" class="gauge-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-panel briefing-panel mt-3">
+                <div class="panel-cutout"></div>
+                <div class="briefing-info">
+                    <span class="warning-tag eng-text" dir="ltr">ACTIVE_DIRECTIVE</span>
+                    <h2 class="briefing-title" id="briefing-title-dynamic">لا توجد مهام بانتظار الإنجاز</h2>
+                    <p class="briefing-text">قم بتأمين الأهداف لزيادة السيولة المادية ونقاط التطوير.</p>
+                    <button class="solid-btn primary-btn mt-2" onclick="document.querySelector('[data-target=\'quests\']').click()">
+                        <span class="btn-cross"></span>
+                        <span class="btn-text">فتح قائمة العمليات</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="tactical-stats-grid mt-3">
+                <div class="stat-block">
+                    <div class="stat-label">الميزانية (COINS)</div>
+                    <div class="stat-val eng-text text-gold" id="dash-coins" dir="ltr">0</div>
+                    <div class="stat-decor eng-text" dir="ltr">CRDT_SYS</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-label">العمليات المكتملة</div>
+                    <div class="stat-val eng-text text-accent" id="dash-completed" dir="ltr">0</div>
+                    <div class="stat-decor eng-text" dir="ltr">OP_SUCC</div>
+                </div>
+            </div>
+
+            <div class="tech-panel mt-3">
+                <div class="panel-top-bar eng-text" dir="ltr">SYS_LOG // RECENT_EVENTS</div>
+                <ul class="data-feed" id="dash-overview"></ul>
+            </div>
+        </section>
+
+        <!-- Quests -->
+        <section id="quests" class="sys-view hidden">
+            <header class="view-header">
+                <div>
+                    <h1 class="view-title">قاعدة العمليات</h1>
+                    <p class="view-subtitle text-muted">المهام الميدانية المتاحة للتنفيذ</p>
+                </div>
+                <button class="solid-btn primary-btn" onclick="openQuestModal()">
+                    <span class="btn-text">+ مهمة جديدة</span>
+                </button>
+            </header>
+
+            <div class="tech-filters" dir="ltr" style="direction: ltr;">
+                <button class="filter-btn active" data-filter="all">SYS.ALL</button>
+                <button class="filter-btn" data-filter="Studying">STUDY</button>
+                <button class="filter-btn" data-filter="Fitness">FITNESS</button>
+                <button class="filter-btn" data-filter="Projects">PROJECTS</button>
+                <button class="filter-btn" data-filter="Personal Development">DEV</button>
+            </div>
+
+            <div class="rpg-grid" id="quests-container"></div>
+        </section>
+
+        <!-- Store -->
+        <section id="store" class="sys-view hidden">
+            <div class="tech-panel store-hero" style="background: var(--c-panel); padding: 40px 20px;">
+                <span class="warning-tag eng-text" dir="ltr">BLACK_MARKET</span>
+                <h1 class="mt-1" style="font-size: clamp(1.4rem, 3vw, 2rem); font-weight:900;">سوق الاستبدال والتطوير</h1>
+                <p class="text-muted mt-1">استخدم رصيدك للحصول على تصاريح ترفيهية ومكافآت.</p>
+                <button class="solid-btn outline-btn mt-2" onclick="openRewardModal()">
+                    <span class="btn-text">إدراج عنصر جديد</span>
+                </button>
+            </div>
+            <div class="rpg-grid mt-3" id="store-container"></div>
+        </section>
+
+        <!-- Profile Control Center -->
+        <section id="profile" class="sys-view hidden">
+            <div class="profile-heading">
+                <div class="profile-heading-info">
+                    <span class="profile-eyebrow eng-text" dir="ltr">PERSONAL DATABASE // 04</span>
+                    <h1 class="profile-main-title">مركز التحكم</h1>
+                    <p class="profile-description">إدارة بيانات النظام والموارد الشخصية.</p>
+                </div>
+                <div class="profile-status eng-text" dir="ltr">
+                    <span class="status-indicator"></span> SYSTEM ONLINE
+                </div>
+            </div>
+
+            <div class="profile-overview">
+                <div class="profile-overview-card">
+                    <div class="overview-icon gold"><span>◈</span></div>
+                    <div class="overview-content">
+                        <span class="overview-label">COINS BALANCE</span>
+                        <strong class="overview-value eng-text" id="profile-coins" dir="ltr">0</strong>
+                        <span class="overview-caption">إجمالي الرصيد الحالي</span>
+                    </div>
+                    <span class="overview-index eng-text">01</span>
+                </div>
+                <div class="profile-overview-card">
+                    <div class="overview-icon accent"><span>⌁</span></div>
+                    <div class="overview-content">
+                        <span class="overview-label">PENDING TASKS</span>
+                        <strong class="overview-value eng-text" id="profile-pending" dir="ltr">0</strong>
+                        <span class="overview-caption">عمليات بانتظار المراجعة</span>
+                    </div>
+                    <span class="overview-index eng-text">02</span>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="section-code eng-text" dir="ltr">CORE_MODULES</span>
+                        <h2>إدارة العمليات</h2>
+                    </div>
+                    <span class="section-count eng-text" dir="ltr">01 — 04</span>
+                </div>
+                <div class="profile-module-grid">
+                    <button class="profile-module-card" data-sub="approvals">
+                        <span class="module-number eng-text" dir="ltr">OP.01</span>
+                        <span class="module-icon">⌁</span>
+                        <span class="module-title">المراجعة والاعتماد</span>
+                        <span class="module-description">مراجعة المهام المعلقة</span>
+                        <span id="menu-pending-badge" class="alert-dot hidden"></span>
+                        <span class="module-access eng-text" dir="ltr">ACCESS →</span>
+                    </button>
+                    <button class="profile-module-card" data-sub="wallet">
+                        <span class="module-number eng-text" dir="ltr">OP.02</span>
+                        <span class="module-icon gold">◈</span>
+                        <span class="module-title">الخزينة المادية</span>
+                        <span class="module-description">إدارة الرصيد والسجل</span>
+                        <span class="module-access eng-text" dir="ltr">ACCESS →</span>
+                    </button>
+                    <button class="profile-module-card" data-sub="inventory">
+                        <span class="module-number eng-text" dir="ltr">OP.03</span>
+                        <span class="module-icon">▤</span>
+                        <span class="module-title">المخزون اللوجستي</span>
+                        <span class="module-description">إدارة العناصر والمكافآت</span>
+                        <span class="module-access eng-text" dir="ltr">ACCESS →</span>
+                    </button>
+                    <button class="profile-module-card" data-sub="achievements">
+                        <span class="module-number eng-text" dir="ltr">OP.04</span>
+                        <span class="module-icon gold">✧</span>
+                        <span class="module-title">سجل الأوسمة</span>
+                        <span class="module-description">الإنجازات المكتسبة</span>
+                        <span class="module-access eng-text" dir="ltr">ACCESS →</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-section profile-system-section">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="section-code eng-text" dir="ltr">SYSTEM_MANAGEMENT</span>
+                        <h2>إدارة النظام</h2>
+                    </div>
+                    <span class="section-count eng-text" dir="ltr">05 — 06</span>
+                </div>
+                <div class="profile-system-list">
+                    <button class="profile-system-item" data-sub="stats">
+                        <span class="system-item-icon">⌗</span>
+                        <span class="system-item-content">
+                            <span class="system-item-title">تحليل البيانات</span>
+                            <span class="system-item-description">إحصائيات الأداء والتقدم</span>
+                        </span>
+                        <span class="system-item-number eng-text" dir="ltr">OP.05</span>
+                        <span class="system-item-arrow eng-text">→</span>
+                    </button>
+                    <button class="profile-system-item" data-sub="settings">
+                        <span class="system-item-icon">⚙</span>
+                        <span class="system-item-content">
+                            <span class="system-item-title">إعدادات النواة</span>
+                            <span class="system-item-description">تخصيص النظام والنسخ الاحتياطي</span>
+                        </span>
+                        <span class="system-item-number eng-text" dir="ltr">OP.06</span>
+                        <span class="system-item-arrow eng-text">→</span>
+                    </button>
+                </div>
+            </div>
+            <div class="profile-footer eng-text" dir="ltr">
+                LIFEXP_OS // CONTROL CENTER
+                <span>END OF MODULE</span>
+            </div>
+        </section>
+
+        <!-- Sub Views -->
+        <section id="approvals" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">قيد الاعتماد</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="rpg-grid mt-3" id="approvals-container"></div>
+        </section>
+
+        <section id="wallet" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">الخزينة</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="tech-panel mt-3 text-center" style="padding: 40px 20px;">
+                <div class="eng-text text-muted" dir="ltr">TOTAL_FUNDS</div>
+                <div class="eng-text text-gold" style="font-size: clamp(3rem, 8vw, 5rem); font-weight:900; line-height:1;" id="wallet-balance" dir="ltr">0</div>
+                <div class="eng-text" dir="ltr">CREDITS</div>
+            </div>
+            <div class="tech-panel mt-3">
+                <div class="panel-top-bar eng-text" dir="ltr">TRANSACTION_HISTORY</div>
+                <div id="transactions-container"></div>
+            </div>
+        </section>
+
+        <section id="inventory" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">المخزون اللوجستي</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="rpg-grid mt-3" id="inventory-container"></div>
+        </section>
+
+        <section id="achievements" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">سجل الأوسمة</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="achievements-list mt-3" id="achievements-container"></div>
+        </section>
+
+        <section id="stats" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">تحليل البيانات</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="tactical-stats-grid mt-3">
+                <div class="tech-panel text-center" id="stats-tasks"></div>
+                <div class="tech-panel text-center" id="stats-economy"></div>
+            </div>
+        </section>
+
+        <section id="settings" class="sys-view hidden sub-view">
+            <header class="view-header">
+                <div><h1 class="view-title">النواة / الإعدادات</h1></div>
+                <button class="solid-btn outline-btn" data-back="profile">
+                    <span class="btn-text">⬅ عودة</span>
+                </button>
+            </header>
+            <div class="tech-panel mt-3" style="max-width: 500px;">
+                <div class="sys-input-group">
+                    <label>CODENAME (الاسم الرمزي)</label>
+                    <input type="text" id="setting-name" class="sys-input">
+                    <button class="solid-btn primary-btn mt-2 w-full" onclick="updateName()">
+                        <span class="btn-text">تحديث البيانات</span>
+                    </button>
+                </div>
+                <hr class="tech-hr">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="solid-btn outline-btn w-full" onclick="exportData()">
+                        <span class="btn-text">تصدير حفظ (BACKUP.JSON)</span>
+                    </button>
+                    <button class="solid-btn outline-btn w-full" onclick="document.getElementById('import-file').click(); playSfx('click')">
+                        <span class="btn-text">استيراد حفظ خارجي</span>
+                    </button>
+                    <input type="file" id="import-file" hidden accept=".json" onchange="importData(event)">
+                </div>
+                
+                <!-- NEW PWA INSTALLATION UI -->
+                <hr class="tech-hr">
+                <div id="pwa-install-container">
+                    <button id="install-btn" class="solid-btn outline-btn w-full hidden" style="border-color: var(--c-green); color: var(--c-green);">
+                        <span class="btn-text">تثبيت التطبيق (Install App)</span>
+                    </button>
+                    <div id="ios-install-hint" class="hidden text-muted text-center mt-2" style="font-size: 0.8rem;">
+                        لتثبيت التطبيق على iOS، اضغط على زر المشاركة ⍐ ثم "Add to Home Screen"
+                    </div>
+                </div>
+
+                <hr class="tech-hr">
+                <button class="solid-btn danger-btn w-full" onclick="resetData()">
+                    <span class="btn-text">إعادة تهيئة النظام (WIPE DATA)</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals -->
+    <div id="quest-modal" class="tech-modal-overlay">
+        <div class="tech-modal-box">
+            <div class="modal-top-bar eng-text" dir="ltr">
+                <span>NEW_DIRECTIVE.EXE</span>
+                <button class="close-btn" aria-label="Close" onclick="hideModal('quest-modal')">X</button>
+            </div>
+            <div class="modal-body">
+                <div class="sys-input-group">
+                    <label>الهدف الرئيسي</label>
+                    <input type="text" id="q-title" class="sys-input" placeholder="اسم العملية...">
+                </div>
+                <div class="sys-input-group">
+                    <label>التصنيف</label>
+                    <select id="q-category" class="sys-input eng-text" dir="ltr">
+                        <option value="Studying">CLASS: STUDYING</option>
+                        <option value="Fitness">CLASS: FITNESS</option>
+                        <option value="Projects">CLASS: PROJECTS</option>
+                        <option value="Personal Development">CLASS: DEV</option>
+                        <option value="Daily Life">CLASS: ROUTINE</option>
+                        <option value="Other">CLASS: OTHER</option>
+                    </select>
+                </div>
+                <div class="sys-input-group">
+                    <label>مستوى التهديد</label>
+                    <select id="q-diff" class="sys-input eng-text" dir="ltr">
+                        <option value="Easy">THREAT: LOW</option>
+                        <option value="Medium">THREAT: MED</option>
+                        <option value="Hard">THREAT: HIGH</option>
+                        <option value="Legendary">THREAT: CRITICAL</option>
+                    </select>
+                </div>
+                <div class="input-grid-2">
+                    <div class="sys-input-group">
+                        <label>العائد (COINS)</label>
+                        <input type="number" id="q-coins" class="sys-input eng-text text-gold" value="50" dir="ltr" min="0">
+                    </div>
+                    <div class="sys-input-group">
+                        <label>الخبرة (XP)</label>
+                        <input type="number" id="q-xp" class="sys-input eng-text text-accent" value="30" dir="ltr" min="0">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+                    <button class="solid-btn outline-btn" onclick="hideModal('quest-modal')" style="flex:1;">
+                        <span class="btn-text">إلغاء</span>
+                    </button>
+                    <button class="solid-btn primary-btn" onclick="saveQuest()" style="flex:2;">
+                        <span class="btn-text">تسجيل وتأكيد</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reward-modal" class="tech-modal-overlay">
+        <div class="tech-modal-box">
+            <div class="modal-top-bar eng-text" dir="ltr">
+                <span>MARKET_ASSET.EXE</span>
+                <button class="close-btn" aria-label="Close" onclick="hideModal('reward-modal')">X</button>
+            </div>
+            <div class="modal-body">
+                <div class="sys-input-group">
+                    <label>اسم المكافأة</label>
+                    <input type="text" id="r-title" class="sys-input" placeholder="اسم العنصر المضاف...">
+                </div>
+                <div class="sys-input-group">
+                    <label>السعر (COINS)</label>
+                    <input type="number" id="r-price" class="sys-input eng-text text-gold" value="150" dir="ltr" min="1">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+                    <button class="solid-btn outline-btn" onclick="hideModal('reward-modal')" style="flex:1;">
+                        <span class="btn-text">إلغاء</span>
+                    </button>
+                    <button class="solid-btn primary-btn" onclick="saveReward()" style="flex:2;">
+                        <span class="btn-text">إدراج بالسوق</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-rack" class="sys-toast-rack" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
